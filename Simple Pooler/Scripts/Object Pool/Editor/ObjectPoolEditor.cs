@@ -79,7 +79,7 @@ public class ObjectPoolEditor : Editor
 				if(objPooler.objsToSpawn.Count != 1)
 				{
 					GUI.backgroundColor = Color.red;
-					if(GUILayout.Button("-"))
+					if(GUILayout.Button("- Remove Pool"))
 					{
 						objPooler.objsToSpawn.RemoveAt(i);
 						objPooler.numsToSpawn.RemoveAt(i);	
@@ -123,7 +123,7 @@ public class ObjectPoolEditor : Editor
 			GUI.backgroundColor = Color.green;
 			
 			//button to add new entries
-			if(GUILayout.Button("+ New Pool"))
+			if(GUILayout.Button("+ Add Pool"))
 			{
 				objPooler.objsToSpawn.Add(null);
 				objPooler.numsToSpawn.Add(0);	
