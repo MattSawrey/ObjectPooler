@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Pooling;
+using SimplePooler;
 
 public class BoxController : MonoBehaviour 
 {
@@ -25,7 +25,7 @@ public class BoxController : MonoBehaviour
 	{
 		if(other.name == "Main Camera")
 		{
-			ObjectPoolController.Pool.AddToExistingPool(this.gameObject);
+			ObjectPoolManager.Instance.AddObjectToPool(this.gameObject);
 		}
 	}
 }

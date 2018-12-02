@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Pooling;
+using SimplePooler;
 
 public class CapsuleController : MonoBehaviour 
 {
@@ -11,7 +11,7 @@ public class CapsuleController : MonoBehaviour
 	{
 		//assign the component to reduce calls in update
 		objTransform = gameObject.transform;
-		MoveDirection = Vector3.up * 0.8f;
+		MoveDirection = Vector3.up * 0.75f;
 	}
 	
 	void OnEnable()
@@ -22,13 +22,5 @@ public class CapsuleController : MonoBehaviour
 	void Update () 
 	{
 		objTransform.position += MoveDirection;
-	}
-	
-	void OnTriggerExit(Collider other)
-	{
-		if(other.name == "Main Camera")
-		{
-			ObjectPoolController.Pool.AddToExistingPool(this.gameObject);
-		}
 	}
 }

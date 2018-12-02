@@ -1,112 +1,95 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace Pooling
-{	
-	//Represents the pool of an individual object type
+namespace SimplePooler
+{
+	/// <summary> ///Represents a pool of object prefab instances. Instances can be taken from the pool and returned to it through the ObjectPoolManager/// </summary> ///
+	[System.Serializable]
 	public class ObjectPool
 	{
-		//Name of the pool
-		public string poolName{get; private set;}	
-		//GameObject to store all of the individual object types underneath the ObjectPoolController
-		public GameObject objectPoolRoot{get; private set;}
-		//Reference to what type of object is stored in this pool
-		public GameObject objectType{get; private set;}
-		//List of all the gameobjects in this pool
-		public List<GameObject> gameObjectList{get; private set;}
-		//Number of objects current residing in the pool
-		public int numObjectsInPool{get{return gameObjectList.Count;}}
-		public int totalPoolObjectsInScene {get; private set;}
+		//Settable by the editor
+		public GameObject objectPrefab;
+		public int initialPoolSize;
 
-		public ObjectPool(GameObject objectPooler, GameObject gameObj, int numObject)
+		public string poolName{get {
+			return objectPrefab != null ? objectPrefab.name + " Pool" : "Object Pool";
+		}}
+
+		private GameObject rootObject;
+		public List<GameObject> poolObjects{get; private set;}
+		public int totalNumObjectsInScene {get; private set;} //Track the total number of objects of this pool type that are in the pool or in use in the scene
+// 
+		public ObjectPool(){}
+
+		public void InitialisePool()
 		{
-			//Create the root pool object
-			objectPoolRoot = new GameObject();
-			//Assign the name of the pool
-			poolName = gameObj.name + " Pool";
-			objectPoolRoot.name = poolName;
-			//Assign parent GameObject and position
-			objectPoolRoot.transform.parent = objectPooler.transform;
-			objectPoolRoot.transform.position = Vector3.zero;
-			
-			//create the gameObjectList
-			gameObjectList = new List<GameObject>();
-			//Take a reference of the object type
-			objectType = gameObj;
-			//Add the required objects on construction of the class
-			AddToPool(numObject, gameObj);
+			rootObject = new GameObject();
+			rootObject.transform.parent = ObjectPoolManager.Instance.transform;
+			rootObject.transform.position = Vector3.zero;
+			rootObject.name = poolName;
+
+			poolObjects = new List<GameObject>();
+			AddToPool(initialPoolSize);
+
+			UpdateTotalNumSceneObjects();
 		}
 
-		//****ADDTOPOOL****//
-
-		//Add a specified number of gameobjects to the pool
-		public void AddToPool(int numToAdd, GameObject gameObj)
+		public void AddToPool(int numToAdd)
 		{
 			for(int i = 0; i < numToAdd; i++)
 			{
-				//Instantiate the individual gameobject
-				GameObject obj = (GameObject)MonoBehaviour.Instantiate(gameObj);
-				obj.name = gameObj.name;
-				obj.transform.parent = objectPoolRoot.transform;
-				obj.transform.position = Vector3.zero;
-				obj.transform.rotation = Quaternion.identity;
-				obj.SetActive(false);
-
-				//Add the gameobject to the list
-				gameObjectList.Add(obj);
-			}
-
-			if(gameObjectList.Count > totalPoolObjectsInScene)
-			{
-				totalPoolObjectsInScene = gameObjectList.Count;
+				poolObjects.Add(GameObject.Instantiate(objectPrefab));
+				poolObjects[i].name = poolObjects[i].name.Replace("(Clone)", "");
+				poolObjects[i].transform.parent = rootObject.transform;
+				poolObjects[i].transform.position = Vector3.zero;
+				poolObjects[i].transform.rotation = Quaternion.identity;
+				poolObjects[i].SetActive(false);
 			}
 		}
 
-		//****TAKEFROMPOOL****//
-
-		//Allows the retreival of one gameobject from the pool		
-		public GameObject TakeFromPool()
-		{
-			GameObject result = gameObjectList[0];
-			gameObjectList.RemoveAt(0);
-			
-			result.transform.parent = null;
-			result.SetActive(true);
-			
-			return result;
-		}
-
-		//****RETURNTOPOOL****//
-		
 		//Return an existing, individual gameobject to the pool
 		public void ReturnToPool(GameObject gameObj)
 		{
 			//Reset the attributes of this particular gameobject
-			gameObj.transform.parent = objectPoolRoot.transform;
+			gameObj.transform.parent = rootObject.transform;
 			gameObj.transform.position = Vector3.zero;
 			gameObj.transform.rotation = Quaternion.identity;
 			gameObj.SetActive(false);
-			
-			//if the object has a rigidbody, reset the forces to prevent movement artifacts when re-enabled
-			if(gameObj.GetComponent<Rigidbody2D>() != null)
-			{
-				gameObj.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-				gameObj.GetComponent<Rigidbody2D>().angularVelocity = 0f;
-			}
-			else if(gameObj.GetComponent<Rigidbody>() != null)
-			{
-				gameObj.GetComponent<Rigidbody>().velocity = Vector3.zero;
-				gameObj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-			}
-			
-			//Add the gameobject to the list
-			gameObjectList.Add(gameObj);
+			poolObjects.Add(gameObj);
 
-			if(gameObjectList.Count > totalPoolObjectsInScene)
+			UpdateTotalNumSceneObjects();
+		}
+
+		public GameObject TakeFromPool()
+		{
+			GameObject result = poolObjects[0];
+			poolObjects.RemoveAt(0);
+			result.transform.parent = null;
+			result.SetActive(true);
+
+			UpdateTotalNumSceneObjects();
+			return result;
+		}
+
+		public GameObject[] TakeObjects(int numToTake)
+		{
+			GameObject[] result = new GameObject[numToTake];
+			for(int i = 0; i < numToTake; i++)
 			{
-				totalPoolObjectsInScene = gameObjectList.Count;
+				result[i] = poolObjects[0];	
+				poolObjects.RemoveAt(0);
+				result[i].transform.parent = null;
+				result[i].SetActive(true);
 			}
+			UpdateTotalNumSceneObjects();
+			return result;
+		}
+
+		private void UpdateTotalNumSceneObjects()
+		{
+			if(poolObjects.Count > totalNumObjectsInScene)
+				totalNumObjectsInScene = poolObjects.Count;
 		}
 	}
 }
