@@ -10,12 +10,12 @@ namespace SimplePooler
 		public bool addToPoolIfNoObjectsPresent;
 		public List<ObjectPool> poolList;
 
-		public void AddObjectToPool(GameObject objToPool)
+		public void AddToPool(GameObject objToPool)
 		{
-			AddObjectsToPool(new []{objToPool});
+			AddManyToPool(new []{objToPool});
 		}
 
-		public void AddObjectsToPool(GameObject[] objsToPool)
+		public void AddManyToPool(GameObject[] objsToPool)
 		{
 			if(objsToPool != null)
 			{
@@ -33,19 +33,19 @@ namespace SimplePooler
 		}
 
 		//Take an individual object from the pool, specified by the name
-		public GameObject TakeObjectFromPool(string objectType)
+		public GameObject TakeFromPool(string objectType)
 		{
-			return TakeObjectsFromPool(objectType, 1)[0];
+			return TakeManyFromPool(objectType, 1)[0];
 		}
 
-		public GameObject[] TakeObjectsFromPool(string objectType, int numObjectsToTake) //Take a number of objects from the pool, specified by the name
+		public GameObject[] TakeManyFromPool(string objectType, int numObjectsToTake) //Take a number of objects from the pool, specified by the name
 		{
 			int poolIndex;
 			if(PoolTypeExists(objectType, out poolIndex))
 			{
 				if(poolList[poolIndex].poolObjects.Count >= numObjectsToTake) //check that there are enough of this object type in the pool
 				{
-					GameObject[] result = poolList[poolIndex].TakeObjects(numObjectsToTake);
+					GameObject[] result = poolList[poolIndex].TakeManyFromPool(numObjectsToTake);
 					return result;
 				}
 				else

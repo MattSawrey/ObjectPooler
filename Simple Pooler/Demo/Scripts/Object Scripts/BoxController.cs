@@ -25,7 +25,7 @@ public class BoxController : MonoBehaviour
 	{
 		if(other.name == "Main Camera")
 		{
-			ObjectPoolManager.Instance.AddObjectToPool(this.gameObject);
+			ObjectPoolManager.Instance.AddToPool(this.gameObject);
 		}
 	}
 }

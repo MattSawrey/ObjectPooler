@@ -13,133 +13,185 @@ public class ObjPoolTester : MonoBehaviour
 	private float sphereCollectionTimer = 0f;
 	private bool sphereGridExists = false;
 
-	public void InstantiateCapsule()
-	{
-		GameObject obj = GameObject.Instantiate(capsule);
-		StartCoroutine(CheckCapsuleDestroy(obj));
-	}
+	private bool spawnCapsuleStreamFromPool = false;
+	private bool spawnCapsuleStreamFromInstantiation = false;
 
-	private IEnumerator CheckCapsuleDestroy(GameObject obj)
-	{
-		while(obj.transform.position.y < 20f)
-			yield return null;
+	#region - capsule stream 
 
-		Destroy(obj);
-	}
-
-	public void PullPoolCapsule()
-	{
-		GameObject obj = ObjectPoolManager.Instance.TakeObjectFromPool("Capsule");
-		if(obj == null)
+		public void StartCapsuleSpawnStreamFromPool()
 		{
-			Debug.Log("Not enough items in the Capsule object pool to satisfy request");
-			return;
+			spawnCapsuleStreamFromPool = true;
+			StartCoroutine(RunCapsuleSpawnStream());
+
 		}
 
-		StartCoroutine(CheckPoolCapsuleDestroy(obj));
-	}
-
-	private IEnumerator CheckPoolCapsuleDestroy(GameObject obj)
-	{
-		while(obj.transform.position.y < 20f)
-			yield return null;
-
-		ObjectPoolManager.Instance.AddObjectToPool(obj);
-	}
-
-	private void InstantiateBox()
-	{
-		GameObject.Instantiate(box);
-	}
-
-	private void PullPoolBox()
-	{
-		ObjectPoolManager.Instance.TakeObjectFromPool("Box");
-	}
-
-	public void InstantiateSphereGrid()
-	{
-		if(sphereGridExists)
+		public void EndCapsuleSpawnStreamFromPool()
 		{
-			Debug.Log("Sphere grid already exists");
-			return;
+			spawnCapsuleStreamFromPool = false;
 		}
 
-		GameObject[] objects = new GameObject[sphereCollectionDimensions.SumOfValues()];
-
-		for(int g = 0; g < sphereCollectionDimensions.SumOfValues(); g++)
-			objects[g] = GameObject.Instantiate(sphere);
-		
-		int i = 0;
-		for(int x = 0; x < sphereCollectionDimensions.x; x++)
+		private IEnumerator RunCapsuleSpawnStream()
 		{
-			for(int y = 0; y < sphereCollectionDimensions.y; y++)
+			float timer = 0f;
+			while(spawnCapsuleStreamFromPool) 
 			{
-				for(int z = 0; z < sphereCollectionDimensions.z; z++)
+				timer += Time.deltaTime*10f;
+				if(timer >= 1f)
 				{
-					objects[i].transform.position = new Vector3(x, y, z);
-					i++;
+					PullPoolCapsule();
+					timer = 0f;
 				}
+				yield return null;
 			}
 		}
-		sphereGridExists = true;
-		StartCoroutine(RemoveCreatedSphereGridTimer(objects));	
-	}
 
-	private IEnumerator RemoveCreatedSphereGridTimer(GameObject[] objects)
-	{
-		while(sphereCollectionTimer <= sphereCollectionExistenceTimer)
+		private void PullPoolCapsule()
 		{
-			sphereCollectionTimer += Time.deltaTime;
-			yield return null;
+			GameObject obj = ObjectPoolManager.Instance.TakeFromPool("Capsule");
+			if(obj == null)
+			{
+				Debug.Log("Not enough items in the Capsule object pool to satisfy request");
+				return;
+			}
+
+			StartCoroutine(CheckPoolCapsuleDestroy(obj));
 		}
-		foreach(GameObject obj in objects)
+
+		private IEnumerator CheckPoolCapsuleDestroy(GameObject obj)
+		{
+			while(obj.transform.position.y < 20f)
+				yield return null;
+
+			ObjectPoolManager.Instance.AddToPool(obj);
+		}
+
+		public void StartCapsuleSpawnStreamFromInstantiation()
+		{
+			spawnCapsuleStreamFromInstantiation = true;
+			StartCoroutine(RunCapsuleSpawnStreamFromInstantiation());
+
+		}
+
+		public void EndCapsuleSpawnStreamFromInstantiation()
+		{
+			spawnCapsuleStreamFromInstantiation = false;
+		}
+
+		private IEnumerator RunCapsuleSpawnStreamFromInstantiation()
+		{
+			float timer = 0f;
+			while(spawnCapsuleStreamFromInstantiation) 
+			{
+				timer += Time.deltaTime*10f;
+				if(timer >= 1f)
+				{
+					InstantiateCapsule();
+					timer = 0f;
+				}
+				yield return null;
+			}
+		}
+
+		public void InstantiateCapsule()
+		{
+			GameObject obj = GameObject.Instantiate(capsule);
+			StartCoroutine(CheckCapsuleDestroy(obj));
+		}
+
+		private IEnumerator CheckCapsuleDestroy(GameObject obj)
+		{
+			while(obj.transform.position.y < 20f)
+				yield return null;
+
 			Destroy(obj);
-		
-		sphereGridExists = false;
-		sphereCollectionTimer = 0f;
-	}	
-
-	public void PullPoolSphereGrid()
-	{
-		if(sphereGridExists)
-		{
-			Debug.Log("Sphere grid already exists");
-			return;
 		}
 
-		GameObject[] objects = ObjectPoolManager.Instance.TakeObjectsFromPool("Sphere", sphereCollectionDimensions.SumOfValues());
-		if(objects == null)
-		{
-			Debug.Log("Not enough items in the Sphere object pool to satisfy request");
-			return;
-		}
+	#endregion
 
-		int i = 0;
-		for(int x = 0; x < sphereCollectionDimensions.x; x++)
+	#region - sphere grid
+
+		public void InstantiateSphereGrid()
 		{
-			for(int y = 0; y < sphereCollectionDimensions.y; y++)
+			if(sphereGridExists)
 			{
-				for(int z = 0; z < sphereCollectionDimensions.z; z++)
+				Debug.Log("Sphere grid already exists");
+				return;
+			}
+
+			GameObject[] objects = new GameObject[sphereCollectionDimensions.SumOfValues()];
+
+			for(int g = 0; g < sphereCollectionDimensions.SumOfValues(); g++)
+				objects[g] = GameObject.Instantiate(sphere);
+			
+			DrawSphereGrid(objects);
+			sphereGridExists = true;
+			StartCoroutine(RemoveCreatedSphereGridTimer(objects));	
+		}
+
+		private IEnumerator RemoveCreatedSphereGridTimer(GameObject[] objects)
+		{
+			while(sphereCollectionTimer <= sphereCollectionExistenceTimer)
+			{
+				sphereCollectionTimer += Time.deltaTime;
+				yield return null;
+			}
+			foreach(GameObject obj in objects)
+				Destroy(obj);
+			
+			sphereGridExists = false;
+			sphereCollectionTimer = 0f;
+		}	
+
+		public void PullPoolSphereGrid()
+		{
+			if(sphereGridExists)
+			{
+				Debug.Log("Sphere grid already exists");
+				return;
+			}
+
+			GameObject[] objects = ObjectPoolManager.Instance.TakeManyFromPool("Sphere", sphereCollectionDimensions.SumOfValues());
+			if(objects == null)
+			{
+				Debug.Log("Not enough items in the Sphere object pool to satisfy request");
+				return;
+			}
+
+			DrawSphereGrid(objects);
+			sphereGridExists = true;
+			StartCoroutine(RemoveSphereGridTimer(objects));
+		}
+
+		private IEnumerator RemoveSphereGridTimer(GameObject[] objects)
+		{
+			while(sphereCollectionTimer <= sphereCollectionExistenceTimer)
+			{
+				sphereCollectionTimer += Time.deltaTime;
+				yield return null;
+			}
+			ObjectPoolManager.Instance.AddManyToPool(objects);
+			sphereGridExists = false;
+			sphereCollectionTimer = 0f;
+		}
+
+		private void DrawSphereGrid(GameObject[] spheres)
+		{
+			float xOffset = sphereCollectionDimensions.x/2;
+			float yOffset = sphereCollectionDimensions.y/2;
+			float zOffset = sphereCollectionDimensions.z/2;
+			int i = 0;
+			for(int x = 0; x < sphereCollectionDimensions.x; x++)
+			{
+				for(int y = 0; y < sphereCollectionDimensions.y; y++)
 				{
-					objects[i].transform.position = new Vector3(x, y, z);
-					i++;
+					for(int z = 0; z < sphereCollectionDimensions.z; z++)
+					{
+						spheres[i].transform.position = new Vector3(x-xOffset, y-yOffset, z-zOffset);
+						i++;
+					}
 				}
 			}
 		}
-		sphereGridExists = true;
-		StartCoroutine(RemoveSphereGridTimer(objects));
-	}
 
-	private IEnumerator RemoveSphereGridTimer(GameObject[] objects)
-	{
-		while(sphereCollectionTimer <= sphereCollectionExistenceTimer)
-		{
-			sphereCollectionTimer += Time.deltaTime;
-			yield return null;
-		}
-		ObjectPoolManager.Instance.AddObjectsToPool(objects);
-		sphereGridExists = false;
-		sphereCollectionTimer = 0f;
-	}
+	#endregion
 }
