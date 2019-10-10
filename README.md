@@ -4,7 +4,7 @@ Object Pooler is an object pooling solution for Unity, designed to avoid the mem
 
 ![](https://raw.githubusercontent.com/matski53/Simple-Pooler/master/SimplePoolerImage.png)
 
-##License
+#License
 
 Copyright (C) 2015 Matthew Sawrey
 
