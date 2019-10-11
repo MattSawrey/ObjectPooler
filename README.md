@@ -2,7 +2,7 @@
 
 Object Pooler is an object pooling solution for Unity, designed to avoid the memory management issues associated with instantiating and destroying objects during runtime. The Object Pooler has an easy-to-use, custom editor for the setup of object pools. Objects can then be taken from the pool, used in the scene and returned back to the pool during runtime, rather than being instantiated and destroyed on every use. 
 
-![](https://raw.githubusercontent.com/matski53/Simple-Pooler/master/SimplePoolerImage.png)
+![](https://raw.githubusercontent.com/MattSawrey/ObjectPooler/master/SimplePoolerImage.png)
 
 # Requires
 
