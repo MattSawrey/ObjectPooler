@@ -4,6 +4,10 @@ Object Pooler is an object pooling solution for Unity, designed to avoid the mem
 
 ![](https://raw.githubusercontent.com/matski53/Simple-Pooler/master/SimplePoolerImage.png)
 
+# Requires
+
+- UnityToolbag (https://github.com/MattSawrey/UnityToolbag)
+
 # Usage
 
 Clone this repository into your "Assets" folder and you're good to go. Be aware that this repo is unfinished and untested as of yet.
