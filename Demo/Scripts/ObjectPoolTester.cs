@@ -2,7 +2,7 @@
 using UnityEngine;
 using SimplePooler;
 
-public class ObjPoolTester : MonoBehaviour 
+public class ObjectPoolTester : MonoBehaviour 
 {
 	public GameObject sphere;
 	public GameObject box;
