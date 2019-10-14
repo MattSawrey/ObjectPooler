@@ -3,4 +3,7 @@ public interface IPoolable
 {
 	void PrepareForPool();
 	void InitiateFromPool();
+
+	// void OnPoolRetreive();
+	// void OnPoolReturn();
 }

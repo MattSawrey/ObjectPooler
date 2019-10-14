@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace SimplePooler 
+namespace SimplePooler
 {
-	[CustomEditor(typeof(ObjectPoolManager))]
+    [CustomEditor(typeof(ObjectPoolManager))]
 	public class ObjectPoolEditor : Editor 
 	{
 		ObjectPoolManager objectPoolManager;
@@ -37,7 +36,7 @@ namespace SimplePooler
 				for(int i = 0; i < objectPoolManager.poolList.Count; i++)
 				{
 					EditorGUILayout.BeginHorizontal();
-					EditorGUILayout.LabelField(objectPoolManager.poolList[i].poolName, EditorStyles.objectFieldThumb);
+					EditorGUILayout.LabelField(objectPoolManager.poolList[i].Name, EditorStyles.objectFieldThumb);
 					EditorGUILayout.LabelField(objectPoolManager.poolList[i].poolObjects.Count.ToString() + " / " + 
 											objectPoolManager.poolList[i].totalNumObjectsInScene.ToString());											
 					this.Repaint();					

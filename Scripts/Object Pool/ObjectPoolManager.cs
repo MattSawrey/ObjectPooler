@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimplePooler
 {
-	/// <summary> ///Manages and provides access to a collection of Object Pools for taking and returning object prefab instances/// </summary> ///
-	public class ObjectPoolManager : Singleton<ObjectPoolManager>
+    /// <summary> ///Manages and provides access to a collection of Object Pools for taking and returning object prefab instances/// </summary> ///
+    public class ObjectPoolManager : Singleton<ObjectPoolManager>
 	{
 		public bool addToPoolIfNoObjectsPresent;
 		public List<ObjectPool> poolList;
@@ -26,7 +25,7 @@ namespace SimplePooler
 						poolList[poolIndex].ReturnToPool(objsToPool[i]);
 				}
 				else
-					Debug.Log("No pool for " + objsToPool[0].name + "Gameobjects exists");
+					Debug.LogWarning("No pool for " + objsToPool[0].name + "Gameobjects exists");
 			}
 			else
 				Debug.Log("Cannot add a null gameobject to object pool!");
@@ -52,7 +51,7 @@ namespace SimplePooler
 				{
 					if(addToPoolIfNoObjectsPresent)
 					{
-						Debug.Log(objectType + " Pool is empty. Adding more " + objectType + " GameObjects to the pool");
+						Debug.LogWarning(objectType + " Pool is empty. Adding more " + objectType + " GameObjects to the pool");
 						poolList[poolIndex].AddToPool(numObjectsToTake - poolList[poolIndex].poolObjects.Count);
 						
 						GameObject[] result = new GameObject[numObjectsToTake];
@@ -62,14 +61,14 @@ namespace SimplePooler
 					}
 					else
 					{
-						Debug.Log("No more " + objectType + " Gameobjects left in the pool! Add more to the pool, or tick Add To Pools If Dry");
+						Debug.LogWarning("No more " + objectType + " Gameobjects left in the pool! Add more to the pool, or tick Add To Pools If Dry");
 						return null;
 					}
 				}
 			}
 			else
 			{
-				Debug.Log("No object called " + objectType + " exists in the pool! Cannot Retreive");
+				Debug.LogWarning("No object called " + objectType + " exists in the pool! Cannot Retreive");
 				return null;
 			}
 		}
@@ -78,7 +77,7 @@ namespace SimplePooler
 		{
 			for(int i = 0; i < poolList.Count; i++)
 			{
-				if(gameObjName + " Pool" == poolList[i].poolName)
+				if(gameObjName + " Pool" == poolList[i].Name)
 				{
 					indexOfPool = i;
 					return true;

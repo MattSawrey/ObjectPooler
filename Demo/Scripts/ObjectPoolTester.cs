@@ -16,13 +16,14 @@ public class ObjectPoolTester : MonoBehaviour
 	private bool spawnCapsuleStreamFromPool = false;
 	private bool spawnCapsuleStreamFromInstantiation = false;
 
+	private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+
 	#region - capsule stream 
 
 		public void StartCapsuleSpawnStreamFromPool()
 		{
 			spawnCapsuleStreamFromPool = true;
 			StartCoroutine(RunCapsuleSpawnStream());
-
 		}
 
 		public void EndCapsuleSpawnStreamFromPool()
@@ -118,10 +119,15 @@ public class ObjectPoolTester : MonoBehaviour
 				return;
 			}
 
+			stopWatch.Reset();
+			stopWatch.Start();
 			GameObject[] objects = new GameObject[sphereCollectionDimensions.SumOfValues()];
 
 			for(int g = 0; g < sphereCollectionDimensions.SumOfValues(); g++)
 				objects[g] = GameObject.Instantiate(sphere);
+
+			stopWatch.Stop();
+			Debug.Log("Instantiation spawn time: " + stopWatch.ElapsedTicks);
 			
 			DrawSphereGrid(objects);
 			sphereGridExists = true;
@@ -150,7 +156,12 @@ public class ObjectPoolTester : MonoBehaviour
 				return;
 			}
 
+			stopWatch.Reset();
+			stopWatch.Start();
 			GameObject[] objects = ObjectPoolManager.Instance.TakeManyFromPool("Sphere", sphereCollectionDimensions.SumOfValues());
+
+			stopWatch.Stop();
+			Debug.Log("Pool draw time: " + stopWatch.ElapsedTicks);
 			if(objects == null)
 			{
 				Debug.Log("Not enough items in the Sphere object pool to satisfy request");
