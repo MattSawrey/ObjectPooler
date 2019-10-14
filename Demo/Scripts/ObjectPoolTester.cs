@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using SimplePooler;
+using ObjectPooler;
 
 public class ObjectPoolTester : MonoBehaviour 
 {

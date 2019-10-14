@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using SimplePooler;
+using ObjectPooler;
 
 public class BoxController : MonoBehaviour 
 {

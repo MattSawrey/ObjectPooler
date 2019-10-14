@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
-namespace SimplePooler
+namespace ObjectPooler
 {
     [CustomEditor(typeof(ObjectPoolManager))]
 	public class ObjectPoolEditor : Editor 

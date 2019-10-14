@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
-namespace SimplePooler
+namespace ObjectPooler
 {
-    /// <summary> ///Manages and provides access to a collection of Object Pools for taking and returning object prefab instances/// </summary> ///
+    /// <summary> 
+	/// Manages and provides access to a collection of Object Pools for taking and returning object prefab instances
+	/// </summary>
     public class ObjectPoolManager : Singleton<ObjectPoolManager>
 	{
 		public bool addToPoolIfNoObjectsPresent;

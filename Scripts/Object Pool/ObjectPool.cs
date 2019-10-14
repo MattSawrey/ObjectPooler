@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace SimplePooler
+namespace ObjectPooler
 {
 	/// <summary>
 	/// Represents a pool of object prefab instances. Instances can be taken from and returned to the pool through the ObjectPoolManager
@@ -9,16 +9,20 @@ namespace SimplePooler
     [System.Serializable]
 	public class ObjectPool
 	{
+		public int ID { get; private set; }
 		[Tooltip("GameObject prefab for this pool")]
 		public GameObject objectPrefab;
 
-		public string Name{get { return objectPrefab != null ? objectPrefab.name + " Pool" : "Empty Pool"; }}
+		public string Name{ get { return objectPrefab != null ? objectPrefab.name + " Pool" : "Empty Pool"; } }
 		public int initialPoolSize;
-		public List<GameObject> poolObjects{get; private set;}
-		public int totalNumObjectsInScene {get; private set;} //Track the total number of objects of this pool type that are in the pool or in use in the scene
+		public Stack<GameObject> poolObjects{ get; private set; }
+		public int totalNumObjectsInScene { get; private set; } //Track the total number of objects of this pool type that are in the pool or in use in the scene
 		private GameObject rootObject;
 
-		public ObjectPool(){}
+		public ObjectPool()
+		{
+
+		}
 
 		public void InitialisePool()
 		{
@@ -26,7 +30,7 @@ namespace SimplePooler
 			rootObject.transform.parent = ObjectPoolManager.Instance.transform;
 			rootObject.transform.position = Vector3.zero;
 			rootObject.name = Name;
-			poolObjects = new List<GameObject>();
+			poolObjects = new Stack<GameObject>();
 			AddToPool(initialPoolSize);
 		}
 
@@ -35,9 +39,10 @@ namespace SimplePooler
 			rootObject.transform.hierarchyCapacity = initialPoolSize;
 			for(int i = 0; i < numToAdd; i++)
 			{
-				poolObjects.Add(GameObject.Instantiate(objectPrefab, Vector3.zero, Quaternion.identity, rootObject.transform));
-				poolObjects[i].name = poolObjects[i].name.Replace("(Clone)", "");
-				poolObjects[i].SetActive(false);
+				GameObject objectToAdd = GameObject.Instantiate(objectPrefab, Vector3.zero, Quaternion.identity, rootObject.transform);
+				objectToAdd.name = objectToAdd.name.Replace("(Clone)", "");
+				objectToAdd.SetActive(false);
+				poolObjects.Push(objectToAdd);
 			}
 
 			if(poolObjects.Count > totalNumObjectsInScene) //Update the total num of objects in the pool
@@ -53,13 +58,12 @@ namespace SimplePooler
 			// gameObject.transform.position = Vector3.zero;
 			// gameObject.transform.rotation = Quaternion.identity;
 			gameObject.SetActive(false);
-			poolObjects.Add(gameObject);
+			poolObjects.Push(gameObject);
 		}
 
 		public GameObject TakeFromPool()
 		{
-			GameObject result = poolObjects[0];	
-			poolObjects.RemoveAt(0);
+			GameObject result = poolObjects.Pop();
 			return result;
 		}
 
@@ -68,8 +72,7 @@ namespace SimplePooler
 			GameObject[] result = new GameObject[numToTake];
 			for(int i = 0; i < numToTake; i++)
 			{
-				result[i] = poolObjects[0];	
-				poolObjects.RemoveAt(0);
+				result[i] = poolObjects.Pop();	
 				result[i].transform.SetParent(null);
 				result[i].SetActive(true);
 			}

@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using SimplePooler;
 
 public class CapsuleController : MonoBehaviour 
 {
