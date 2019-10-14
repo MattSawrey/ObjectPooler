@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using ObjectPooler;
+using UnityEngine.UI;
 
 public class ObjectPoolTester : MonoBehaviour 
 {
@@ -10,6 +11,8 @@ public class ObjectPoolTester : MonoBehaviour
 
 	public Vector3i sphereCollectionDimensions = new Vector3i(20, 20, 20);
 	public float sphereCollectionExistenceTimer = 10f;
+	public Text benchmarkText;
+
 	private float sphereCollectionTimer = 0f;
 	private bool sphereGridExists = false;
 
@@ -127,7 +130,7 @@ public class ObjectPoolTester : MonoBehaviour
 				objects[g] = GameObject.Instantiate(sphere);
 
 			stopWatch.Stop();
-			Debug.Log("Instantiation spawn time: " + stopWatch.ElapsedTicks);
+			benchmarkText.text = "Instantiation spawn time: " + stopWatch.ElapsedMilliseconds + "ms";
 			
 			DrawSphereGrid(objects);
 			sphereGridExists = true;
@@ -146,6 +149,7 @@ public class ObjectPoolTester : MonoBehaviour
 			
 			sphereGridExists = false;
 			sphereCollectionTimer = 0f;
+			benchmarkText.text = "";
 		}	
 
 		public void PullPoolSphereGrid()
@@ -161,7 +165,7 @@ public class ObjectPoolTester : MonoBehaviour
 			GameObject[] objects = ObjectPoolManager.Instance.TakeManyFromPool("Sphere", sphereCollectionDimensions.SumOfValues());
 
 			stopWatch.Stop();
-			Debug.Log("Pool draw time: " + stopWatch.ElapsedTicks);
+			benchmarkText.text = "Pool draw time: " + stopWatch.ElapsedMilliseconds + "ms";
 			if(objects == null)
 			{
 				Debug.Log("Not enough items in the Sphere object pool to satisfy request");
@@ -183,6 +187,7 @@ public class ObjectPoolTester : MonoBehaviour
 			ObjectPoolManager.Instance.AddManyToPool(objects);
 			sphereGridExists = false;
 			sphereCollectionTimer = 0f;
+			benchmarkText.text = "";
 		}
 
 		private void DrawSphereGrid(GameObject[] spheres)

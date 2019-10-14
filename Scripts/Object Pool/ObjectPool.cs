@@ -53,7 +53,7 @@ namespace ObjectPooler
 		public void ReturnToPool(GameObject gameObject)
 		{
 			//Reset the attributes of this particular gameobject
-			gameObject.transform.parent = rootObject.transform;
+			// gameObject.transform.parent = rootObject.transform;
 			// TODO - Unsure if this is needed for passing an object back into the pool
 			// gameObject.transform.position = Vector3.zero;
 			// gameObject.transform.rotation = Quaternion.identity;
@@ -73,7 +73,7 @@ namespace ObjectPooler
 			for(int i = 0; i < numToTake; i++)
 			{
 				result[i] = poolObjects.Pop();	
-				result[i].transform.SetParent(null);
+				// result[i].transform.parent = null;
 				result[i].SetActive(true);
 			}
 			return result;
